@@ -112,6 +112,7 @@
       <Value>../SAMD20_DFP/1.3.124/samd20b/include/instance</Value>
       <Value>../SAMD20_DFP/1.3.124/samd20b/include/pio</Value>
       <Value>../clock</Value>
+      <Value>../uart</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
   <armgcc.compiler.optimization.level>Optimize (-O1)</armgcc.compiler.optimization.level>
@@ -156,6 +157,10 @@
     </Compile>
     <Compile Include="startup\system_samd20.c">
       <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="uart\uart.c">
+      <SubType>compile</SubType>
+      <Link>uart.c</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
