@@ -16,13 +16,13 @@
 // BAUD calculation
 #define CLOCKRATE 8000000
 #define BAUDRATE 115200
-#define BAUD 65536UL - ((uint64_t)65536 * 16 * BAUDRATE) / CLOCKRATE
+//#define BAUD 65536UL - ((uint64_t)65536 * 16 * BAUDRATE) / CLOCKRATE
 
 #define REC_ERR 2
 
 extern uint8_t sercom3_errors, sercom3_char_received, sercom3_data;
 
-void uiart_init(uint8_t sercom_idx, uint32_t baud_rate)
+void uart_init(uint8_t sercom_idx, uint32_t baud_rate)
 {
 	SercomUsart *sercom_usart_ins = SERCOM0 + ( sercom_idx * 0x400U);
     // PORT Setup
@@ -102,13 +102,13 @@ void SERCOM3_Handler()
 {
 	if(REG_SERCOM3_USART_INTFLAG & SERCOM_USART_INTFLAG_RXC)	//character received?
 	{
-		sercom3_char_received = true;
-		sercom3_data = REG_SERCOM3_USART_DATA;	//fetch received character
+		//sercom3_char_received = true;
+		//sercom3_data = REG_SERCOM3_USART_DATA;	//fetch received character
 
 		if(REG_SERCOM3_USART_STATUS & (SERCOM_USART_STATUS_FERR | SERCOM_USART_STATUS_BUFOVF))	//receive errors happened?
 		{
 			REG_SERCOM3_USART_STATUS = SERCOM_USART_STATUS_FERR | SERCOM_USART_STATUS_BUFOVF;	//reset errors (framing and buffer overflow error)
-			sercom3_errors |= REC_ERR;	//set global rec error flag in my global error variable not to use the char
+			//sercom3_errors |= REC_ERR;	//set global rec error flag in my global error variable not to use the char
 		}
 
 	}
@@ -120,11 +120,11 @@ void SERCOM3_Handler()
 	}
 }
 
-void uart_putchar(uint8_t sercom_dx, char ch)
+void uart_putchar(uint8_t sercom_idx, char ch)
 {
 	SercomUsart *sercom_usart_ins = SERCOM0 + ( sercom_idx * 0x400U);
-	while ((ercom_usart_ins->NTFLAG.reg & SERCOM_USART_INTFLAG_DRE) == 0);
-	sercom_usart_ins->DATA = ch;
+	while ((sercom_usart_ins->INTFLAG.reg & SERCOM_USART_INTFLAG_DRE) == 0);
+	sercom_usart_ins->DATA.reg = ch;
 }
 
 char uart_getchar(uint8_t sercom_idx)

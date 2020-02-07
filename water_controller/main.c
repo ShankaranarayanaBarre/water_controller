@@ -16,7 +16,7 @@ int main(void)
     SystemInit();
 	
 	/* Initialize the UART */
-	uart_init();
+	uart_init(0, 115200);
 
     /* Replace with your application code */
     while (1) 
