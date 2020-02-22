@@ -70,8 +70,8 @@ void uart_init(uint8_t sercom_idx, uint32_t baud_rate)
 	// SERCOM3_USART_CTRLA - TXPO assigned to PAD2
 	// SERCOM3_USART_CTRLA - RXPO assigned to PAD3
 	// SERCOM3_USART_CTRLA - DORD = LSB is transmitted first
-	sercom_usart_ins->CTRLA.reg = SERCOM_USART_CTRLA_MODE_USART_INT_CLK | SERCOM_USART_CTRLA_RUNSTDBY | SERCOM_USART_CTRLA_TXPO_PAD2
-							  | SERCOM_USART_CTRLA_RXPO_PAD3 | SERCOM_USART_CTRLA_DORD;
+	sercom_usart_ins->CTRLA.reg = SERCOM_USART_CTRLA_MODE_USART_INT_CLK | SERCOM_USART_CTRLA_RUNSTDBY | SERCOM_USART_CTRLA_TXPO_PAD0
+							  | SERCOM_USART_CTRLA_RXPO_PAD1 | SERCOM_USART_CTRLA_DORD;
 	while(sercom_usart_ins->STATUS.reg & SERCOM_USART_STATUS_SYNCBUSY);
 
 	// SERCOM3 USART BAUD register setup
@@ -134,3 +134,23 @@ char uart_getchar(uint8_t sercom_idx)
 	return sercom_usart_ins->DATA.reg;
 }
 
+void uart_write(uint8_t sercom_idx, uint8_t * buff, uint32_t len)
+{
+	SercomUsart *sercom_usart_ins = SERCOM0 + ( sercom_idx * 0x400U);
+	for (uint32_t i = 0; i < len; i++)
+	{
+		while ((sercom_usart_ins->INTFLAG.reg & SERCOM_USART_INTFLAG_DRE) == 0);
+		sercom_usart_ins->DATA.reg = buff[i];	
+	}
+
+}
+void uart_read(uint8_t sercom_idx, uint8_t * buff, uint32_t len)
+{
+	SercomUsart *sercom_usart_ins = SERCOM0 + ( sercom_idx * 0x400U);
+	for (uint32_t i = 0; i < len; i++)
+	{
+		while ((sercom_usart_ins->INTFLAG.reg & SERCOM_USART_INTFLAG_RXC) == 0);
+		buff[i] = sercom_usart_ins->DATA.reg;
+	}
+
+}
