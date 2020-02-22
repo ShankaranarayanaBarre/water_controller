@@ -7,5 +7,4 @@ char uart_getchar(uint8_t sercom_idx);
 void uart_write(uint8_t sercom_idx, uint8_t * buff, uint32_t len);
 void uart_read(uint8_t sercom_idx, uint8_t * buff, uint32_t len);
 
-
 #endif /* _UART_EXTERN_H_ */
