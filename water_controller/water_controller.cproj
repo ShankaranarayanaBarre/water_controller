@@ -113,6 +113,7 @@
       <Value>../SAMD20_DFP/1.3.124/samd20b/include/pio</Value>
       <Value>../clock</Value>
       <Value>../uart</Value>
+      <Value>../PGA460</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
   <armgcc.compiler.optimization.level>Optimize (-O1)</armgcc.compiler.optimization.level>
@@ -151,6 +152,10 @@
     </Compile>
     <Compile Include="main.c">
       <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="PGA460\PGA460.c">
+      <SubType>compile</SubType>
+      <Link>PGA460.c</Link>
     </Compile>
     <Compile Include="startup\startup_samd20.c">
       <SubType>compile</SubType>
