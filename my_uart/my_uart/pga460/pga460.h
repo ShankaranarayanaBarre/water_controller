@@ -41,18 +41,6 @@
 #ifndef _PGA460_H
 #define _PGA460_H
 
-#include <cstring>
-#include <termios.h>
-
-#include <drivers/device/device.h>
-#include <drivers/drv_hrt.h>
-
-#include <uORB/topics/distance_sensor.h>
-
-#include <px4_platform_common/module.h>
-#include <px4_platform_common/module_params.h>
-#include <px4_platform_common/tasks.h>
-
 
 #define PGA460_DEFAULT_PORT "/dev/ttyS6"
 #define MAX_DETECTABLE_DISTANCE          3.0f
@@ -108,6 +96,7 @@
 #define EE_UNLOCK_ST1   0x68
 #define EE_UNLOCK_ST2   0x69
 
+#define _resonant_frequency 40000
 // EEPROM -- non-volatile
 #define USER_DATA1      0xAA    //reg addr      0x0
 #define USER_DATA2      0x0     //reg addr      0x1
@@ -223,5 +212,9 @@ typedef enum
 #define PGA460_write io_write
 #define PGA460_read io_read
 
+
+float PGA460_get_temperature(void);
+float PGA460_calculate_object_distance(uint16_t time_of_flight);
+uint8_t PGA460_read_register(const uint8_t reg);
 
 #endif

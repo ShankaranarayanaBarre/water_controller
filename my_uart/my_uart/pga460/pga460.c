@@ -41,7 +41,7 @@ int PGA460_initialize_device_settings()
 int PGA460_initialize_thresholds()
 {
 	const uint8_t array_size = 35;
-	uint8_t settings_buf[array_size] = {SYNCBYTE, BC_THRBW,
+	uint8_t settings_buf[35] = {SYNCBYTE, BC_THRBW,
 					    P1_THR_0, P1_THR_1, P1_THR_2, P1_THR_3, P1_THR_4, P1_THR_5,
 					    P1_THR_6, P1_THR_7, P1_THR_8, P1_THR_9, P1_THR_10,
 					    P1_THR_11, P1_THR_12, P1_THR_13, P1_THR_14, P1_THR_15,
@@ -145,7 +145,7 @@ int PGA460_flash_eeprom()
 	return PX4_OK;
 }
 
-float PGA460_get_temperature()
+float PGA460_get_temperature(void)
 {
 	uint8_t buf_tx[4] = {SYNCBYTE, TNLM, 0x00, 0xFF};
 	uint8_t checksum = PGA460_calc_checksum(&buf_tx[0], 3);
@@ -327,7 +327,7 @@ int PGA460_read_eeprom()
 	PGA460_unlock_eeprom();
 
 	const int array_size = 43;
-	 uint8_t user_settings[array_size] =
+	 uint8_t user_settings[43] =
 		{USER_DATA1, USER_DATA2, USER_DATA3, USER_DATA4,
 		 USER_DATA5, USER_DATA6, USER_DATA7, USER_DATA8, USER_DATA9, USER_DATA10,
 		 USER_DATA11, USER_DATA12, USER_DATA13, USER_DATA14, USER_DATA15, USER_DATA16,
@@ -339,7 +339,7 @@ int PGA460_read_eeprom()
 
 	int ret = -1;
 	uint8_t cmd_buf[2] = {SYNCBYTE, EEBR};
-	uint8_t buf_rx[array_size + 2] = {};
+	uint8_t buf_rx[43 + 2] = {};
 
 	// The pga460 responds to this write() call by reporting current eeprom values.
 	ret = PGA460_write(_fd, &cmd_buf[0], sizeof(cmd_buf));
@@ -432,7 +432,7 @@ uint8_t PGA460_read_register(const uint8_t reg)
 int PGA460_read_threshold_registers()
 {
 	const int array_size = 32;
-	uint8_t user_settings[array_size] = {P1_THR_0, P1_THR_1, P1_THR_2, P1_THR_3, P1_THR_4,
+	uint8_t user_settings[32] = {P1_THR_0, P1_THR_1, P1_THR_2, P1_THR_3, P1_THR_4,
 					     P1_THR_5, P1_THR_6, P1_THR_7, P1_THR_8, P1_THR_9, P1_THR_10, P1_THR_11,
 					     P1_THR_12, P1_THR_13, P1_THR_14, P1_THR_15,
 					     P2_THR_0, P2_THR_1, P2_THR_2, P2_THR_3, P2_THR_4, P2_THR_5, P2_THR_6,
@@ -450,7 +450,7 @@ int PGA460_read_threshold_registers()
 
 	px4_usleep(10000);
 
-	uint8_t buf_rx[array_size + 2] = {};
+	uint8_t buf_rx[32 + 2] = {};
 	int bytes_available = sizeof(buf_rx);
 	int total_bytes = 0;
 
@@ -503,54 +503,54 @@ void PGA460_run()
 	PGA460_open_serial();
 	int ret = PGA460_initialize_device_settings();
 
-	if(ret != PX4_OK) {
-		PGA460_close_serial();
-		PX4_INFO("Could not initialize device settings. Exiting.");
-		return;
-	}
-
-	struct distance_sensor_s report = {};
-	_distance_sensor_topic = orb_advertise(ORB_ID(distance_sensor), &report);
-
-	if (_distance_sensor_topic == nullptr) {
-		PX4_WARN("Advertise failed.");
-		return;
-	}
-
-	_start_loop = hrt_absolute_time();
-
-	while (!should_exit()) {
-		// Check last report to determine if we need to switch range modes.
-		uint8_t mode = set_range_mode();
-		take_measurement(mode);
-
-		// Control rate.
-		uint64_t loop_time = hrt_absolute_time() - _start_loop;
-		uint32_t sleep_time = (loop_time > POLL_RATE_US) ? 0 : POLL_RATE_US - loop_time;
-		px4_usleep(sleep_time);
-
-		_start_loop = hrt_absolute_time();
-		request_results();
-		collect_results();
-	}
-
-	PX4_INFO("Exiting.");
-	close_serial();
+	//if(ret != PX4_OK) {
+		//PGA460_close_serial();
+		//PX4_INFO("Could not initialize device settings. Exiting.");
+		//return;
+	//}
+//
+	//struct distance_sensor_s report = {};
+	//_distance_sensor_topic = orb_advertise(ORB_ID(distance_sensor), &report);
+//
+	//if (_distance_sensor_topic == nullptr) {
+		//PX4_WARN("Advertise failed.");
+		//return;
+	//}
+//
+	//_start_loop = hrt_absolute_time();
+//
+	//while (!should_exit()) {
+		//// Check last report to determine if we need to switch range modes.
+		//uint8_t mode = set_range_mode();
+		//take_measurement(mode);
+//
+		//// Control rate.
+		//uint64_t loop_time = hrt_absolute_time() - _start_loop;
+		//uint32_t sleep_time = (loop_time > POLL_RATE_US) ? 0 : POLL_RATE_US - loop_time;
+		//px4_usleep(sleep_time);
+//
+		//_start_loop = hrt_absolute_time();
+		//request_results();
+		//collect_results();
+	//}
+//
+	//PX4_INFO("Exiting.");
+	//close_serial();
 }
 
-uint8_t PGA460_set_range_mode()
-{
-	// Set the ASICs settings depening on the distance read from our last report.
-	if (_previous_valid_report_distance > (MODE_SET_THRESH + MODE_SET_HYST)) {
-		_ranging_mode = MODE_LONG_RANGE;
-
-	} else if (_previous_valid_report_distance < (MODE_SET_THRESH - MODE_SET_HYST)) {
-		_ranging_mode = MODE_SHORT_RANGE;
-
-	}
-
-	return _ranging_mode;
-}
+//uint8_t PGA460_set_range_mode()
+//{
+	//// Set the ASICs settings depening on the distance read from our last report.
+	//if (_previous_valid_report_distance > (MODE_SET_THRESH + MODE_SET_HYST)) {
+		//_ranging_mode = MODE_LONG_RANGE;
+//
+	//} else if (_previous_valid_report_distance < (MODE_SET_THRESH - MODE_SET_HYST)) {
+		//_ranging_mode = MODE_SHORT_RANGE;
+//
+	//}
+//
+	//return _ranging_mode;
+//}
 
 int PGA460_take_measurement(const uint8_t mode)
 {

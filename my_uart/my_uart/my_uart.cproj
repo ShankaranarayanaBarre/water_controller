@@ -281,6 +281,7 @@
       <Value>../hpl/sysctrl</Value>
       <Value>../hri</Value>
       <Value>%24(PackRepoDir)\atmel\SAMD20_DFP\1.3.124\samd20b\include</Value>
+      <Value>../pga460</Value>
     </ListValues>
   </armgcc.compiler.directories.IncludePaths>
   <armgcc.compiler.optimization.level>Optimize (-O1)</armgcc.compiler.optimization.level>
@@ -299,6 +300,7 @@
     </ListValues>
   </armgcc.linker.libraries.LibrarySearchPaths>
   <armgcc.linker.optimization.GarbageCollectUnusedSections>True</armgcc.linker.optimization.GarbageCollectUnusedSections>
+  <armgcc.linker.memorysettings.ExternalRAM />
   <armgcc.linker.miscellaneous.LinkerFlags>-Tsamd20e15b_flash.ld</armgcc.linker.miscellaneous.LinkerFlags>
   <armgcc.assembler.general.IncludePaths>
     <ListValues>
@@ -635,6 +637,10 @@
     </Compile>
     <Compile Include="main.c">
       <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="pga460\pga460.c">
+      <SubType>compile</SubType>
+      <Link>pga460.c</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
