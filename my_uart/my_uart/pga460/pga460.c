@@ -14,7 +14,7 @@ uint8_t PGA460_calc_checksum (const uint8_t *data, const uint32_t size)
 	return((~checksum) & 0xFFu);
 }
 
-int PGA460_initialize_device_settings()
+int PGA460_initialize_device_settings(void)
 {
 	if (PGA460_initialize_thresholds() != PX4_OK) {
 		PX4_WARN("Thresholds not initialized");
@@ -55,7 +55,7 @@ int PGA460_initialize_thresholds()
 
 	int ret = PGA460_write(_fd, &settings_buf[0], sizeof(settings_buf));
 
-	if (!ret) {
+	if (ret != array_size) {
 		return PX4_ERROR;
 	}
 
@@ -200,11 +200,11 @@ float PGA460_get_temperature(void)
 	return temperature;
 }
 
-int PGA460_open_serial()
+int PGA460_open_serial(void)
 {
-	struct io_descriptor *io;
+	//struct io_descriptor *io;
 	//_fd = PGA460_open(_port, O_RDWR | O_NOCTTY | O_NONBLOCK);
-	usart_sync_get_io_descriptor(&USART_0, &io);
+	usart_sync_get_io_descriptor(&USART_0, &_fd);
 	usart_sync_enable(&USART_0);
 
 	if (_fd == 0) {
@@ -212,7 +212,7 @@ int PGA460_open_serial()
 		return PX4_ERROR;
 	}
 
-	return io;
+	return 0;
 }
 
 void PGA460_print_device_status()
@@ -444,7 +444,7 @@ int PGA460_read_threshold_registers()
 
 	int ret = PGA460_write(_fd, &buf_tx[0], sizeof(buf_tx));
 
-	if(!ret) {
+	if(ret != array_size) {
 		return PX4_ERROR;
 	}
 
@@ -498,10 +498,11 @@ int PGA460_request_results()
 	return PX4_OK;
 }
 
-void PGA460_run()
+void PGA460_run(void)
 {
 	PGA460_open_serial();
 	int ret = PGA460_initialize_device_settings();
+	PGA460_read_register(0x00);
 
 	//if(ret != PX4_OK) {
 		//PGA460_close_serial();

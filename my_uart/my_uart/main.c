@@ -1,5 +1,7 @@
 #include <atmel_start.h>
 
+#include "pga460.h"
+
 #define SYNC_BYTE			0x55u
 #define MAX_REG_ACC_SIZE	43u
 #define FRAME_OVERHEAD		3u
@@ -37,11 +39,12 @@ uint8_t PGA460_calc_checksum (uint8_t * buff, uint32_t len);
 	//return(0xFFu - (checksum & 0xFFu));
 //}
 int main(void)
-{
+ {
 	/* Initializes MCU, drivers and middleware */
 	atmel_start_init();
 
 	//PGA460_read_register();
+	PGA460_run();
 
 	/* Replace with your application code */
 	while (1) {

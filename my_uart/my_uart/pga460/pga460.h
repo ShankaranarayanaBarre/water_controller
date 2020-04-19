@@ -216,5 +216,6 @@ typedef enum
 float PGA460_get_temperature(void);
 float PGA460_calculate_object_distance(uint16_t time_of_flight);
 uint8_t PGA460_read_register(const uint8_t reg);
+void PGA460_run(void);
 
 #endif
